@@ -68,6 +68,28 @@ This will:
 
 ---
 
+## Menu Bar App (Optional)
+
+You can run autoWifi as a macOS menu bar app for manual triggering.
+
+### 1. Install Dependencies
+
+You'll need Python 3 and the `rumps` library:
+
+```bash
+pip install rumps
+```
+
+### 2. Run the App
+
+```bash
+python menubar.py
+```
+
+This will add a "WiFi" item to your system menu bar. Click it and select **Login WiFi** to manually run the script.
+
+---
+
 ## How it works
 
 The script periodically sends an authentication request to the network login endpoint.
@@ -94,6 +116,7 @@ This will stop the LaunchAgent and remove it from your system.
 autoWifi
 │
 ├── autowifi.sh        # login script
+├── menubar.py         # macOS menu bar app
 ├── install.sh         # installs LaunchAgent
 ├── uninstall.sh       # removes LaunchAgent
 ├── autowifi.plist     # macOS background service configuration
