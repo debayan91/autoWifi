@@ -12,7 +12,7 @@
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
-    <true/>
+    <false/>
     <key>WorkingDirectory</key>
     <string>REPLACE_WITH_ABSOLUTE_PATH_TO_REPO_DIR</string>
 </dict>
