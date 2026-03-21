@@ -70,58 +70,78 @@ This will:
 
 ---
 
-## Menu Bar Utility (Background)
+## Menu Bar Utility (Native Swift)
 
-The menu bar utility provides a "WiFi" icon in your system menu bar for manual triggers and status notifications.
+The menu bar utility provides a native macOS "autoWifi" icon in your system menu bar for manual triggers. It is built using Swift with zero third-party dependencies.
 
-### 1. Install Dependencies
+### 1. Requirements
 
-Ensure Python 3 and `rumps` are installed:
-
-```bash
-pip install rumps
-```
-
-### 2. Install the Menu Bar App
-
-Run the dedicated installation script:
+* macOS Command Line Tools (for `swiftc`)
 
 ```bash
-chmod +x install_menubar.sh
-./install_menubar.sh
+xcode-select --install
 ```
 
-This will:
-- Mark `menubar.py` as executable.
-- Set up a macOS LaunchAgent to start the app automatically at login.
-- Start the app immediately.
+### 2. Compile & Install
 
-### 3. Uninstall Menu Bar Utility
+The utility consists of a single Swift file `menubar.swift`. You can compile it and set it to start automatically at login:
+
+**Compile the App:**
+
+```bash
+swiftc -framework AppKit menubar.swift -o MenuBarApp
+```
+
+**Set up Auto-start (LaunchAgent):**
+
+1. Create a directory for LaunchAgents if it doesn't exist:
+
+   ```bash
+   mkdir -p ~/Library/LaunchAgents
+   ```
+
+2. Copy the provided `.plist` to your LaunchAgents folder (ensure you update the path to the `MenuBarApp` binary within the plist):
+
+   ```bash
+   cp com.debayan.menubarapp.plist ~/Library/LaunchAgents/
+   ```
+
+3. Load the service:
+
+   ```bash
+   launchctl load ~/Library/LaunchAgents/com.debayan.menubarapp.plist
+   ```
+
+### 3. Usage
+
+* You will see `autoWifi` in your menu bar.
+* Click **"Run Script"** (or use `Cmd+R`) to manually trigger the `autowifi.sh` script.
+* Click **"Quit"** (or use `Cmd+Q`) to exit the application.
+
+### 4. Uninstall
 
 To remove the menu bar app and its auto-start configuration:
 
 ```bash
-chmod +x uninstall_menubar.sh
-./uninstall_menubar.sh
+launchctl unload ~/Library/LaunchAgents/com.debayan.menubarapp.plist
+rm ~/Library/LaunchAgents/com.debayan.menubarapp.plist
+rm MenuBarApp
 ```
 
 ## How it works
 
-The script periodically sends an authentication request to the network login endpoint.
-If your network session expires or you reconnect to Wi-Fi, autoWifi automatically re-authenticates.
+The `autowifi.sh` script handles the `curl`-based authentication. The Swift menu bar app acts as a wrapper that allows you to trigger this script easily from the GUI without keeping a terminal open.
 
 ---
 
-## Uninstall
+## Uninstall Service
 
-To remove the service:
+To remove the core background service (script-only):
 
 ```bash
 chmod +x uninstall.sh
 ./uninstall.sh
 ```
-
-This will stop the LaunchAgent and remove it from your system.
 
 ---
 
@@ -130,14 +150,13 @@ This will stop the LaunchAgent and remove it from your system.
 ```text
 autoWifi
 │
-├── autowifi.sh        # login script
-├── menubar.py         # macOS menu bar app
-├── install.sh         # installs LaunchAgent (script-only)
-├── install_menubar.sh # installs LaunchAgent (menu bar app)
-├── uninstall.sh       # removes LaunchAgent (script-only)
-├── uninstall_menubar.sh # removes LaunchAgent (menu bar app)
-├── autowifi.plist     # macOS background service configuration
-├── com.autowifi.menubar.plist # menu bar app LaunchAgent template
+├── autowifi.sh                # Core login script
+├── menubar.swift             # Native Swift menu bar app source
+├── MenuBarApp                # Compiled binary (after build)
+├── install.sh                # Installs LaunchAgent (script-only)
+├── uninstall.sh              # Removes LaunchAgent (script-only)
+├── autowifi.plist            # macOS background service configuration
+├── com.debayan.menubarapp.plist # Menu bar app LaunchAgent configuration
 ├── .gitignore
 └── README.md
 ```
